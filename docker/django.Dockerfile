@@ -1,5 +1,8 @@
 FROM python:3.12-slim-bullseye
 
+# TODO: Open http port when deploying
+# EXPOSE 8000 
+
 # Prevent buffering std out
 ENV PYTHONUNBUFFERED 1 
 # Prevent creating pyc files

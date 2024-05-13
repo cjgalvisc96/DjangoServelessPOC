@@ -8,13 +8,10 @@ services:
     env_file: ../loc.env
     restart: always
     command: gunicorn -b 0.0.0.0:8000 django_serverless_poc.wsgi:application
-    # volumes:
-    #   - ..:/app/
+    volumes:
+      - ../django_serverless_poc:/app/
     depends_on:
       - django_serveless_poc_db
-    expose:
-      - 8000
-      - 9500
     ports:
       - "8000:8000"
       - "9500:9500"
