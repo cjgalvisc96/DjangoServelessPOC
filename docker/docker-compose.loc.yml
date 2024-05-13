@@ -1,0 +1,80 @@
+services:
+  django_serveless_poc_backend:
+    image: django_serveless_poc_image
+    container_name: django_serveless_poc_container
+    build:
+      context: ../
+      dockerfile: docker/django.Dockerfile
+    env_file: ../loc.env
+    restart: always
+    command: gunicorn -b 0.0.0.0:8000 django_serverless_poc.wsgi:application
+    # volumes:
+    #   - ..:/app/
+    depends_on:
+      - django_serveless_poc_db
+    expose:
+      - 8000
+      - 9500
+    ports:
+      - "8000:8000"
+      - "9500:9500"
+    networks:
+      - django_serveless_poc-net
+
+  django_serveless_poc_db:
+    image: postgres
+    container_name: django_serveless_poc_db_container
+    volumes:
+      - django_serveless_poc_db_data:/var/lib/postgresql/data/
+    restart: always
+    environment:
+      POSTGRES_DB: "django_serveless_poc_database"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      PGPORT: 5432
+    ports:
+      - "5432:5432"
+    networks:
+      - django_serveless_poc-net
+       
+  localstack:
+    image: localstack/localstack-pro
+    container_name: localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # External services port range
+      - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (Pro)
+    environment:
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
+      - DEBUG=${DEBUG:-0}
+      - PERSISTENCE=${PERSISTENCE:-0}
+    volumes:
+      - ${PWD}/docker/localstack_pro:/var/lib/localstack
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - django_serveless_poc-net
+   
+  aws_cli_local:
+    image: amazon/aws-cli:2.15.6
+    container_name: aws_cli_local 
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    entrypoint: /bin/sh -c
+    command: >
+      "
+        # Create DB
+        # aws --endpoint-url=http://localstack:4566 rds create-db-cluster --db-cluster-identifier loc-access-db --engine aurora-postgresql --database-name loc_access_db --master-username 1234local --master-user-password local1234
+      "
+    depends_on:
+      - localstack
+    networks:
+      - django_serveless_poc-net
+  
+networks:
+  django_serveless_poc-net:
+    external: true
+
+volumes: 
+  django_serveless_poc_db_data:
