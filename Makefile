@@ -1,8 +1,11 @@
-## 🧙‍♂️ Globals
+## 🧙‍♂️ GLOBALS
 SHELL := $(shell which bash)
+ROOT_PATH := $(shell pwd)
 DOCKER_COMPOSE_FILE_PATH = "./docker/docker-compose.loc.yml"
 .DEFAULT_GOAL := help
 ALIAS_AWSLOCAL := $(shell which aws) --profile localstack
+ENV_NAME ?= # default
+TG_ENV_PATH :=  ${ROOT_PATH}/terraform/environments/${ENV_NAME}
 
 .PHONY: help 
 help: ## To check the help commands
@@ -15,8 +18,7 @@ ifndef $(shell command -v docker)
 	@exit 1
 endif
 
-## 🌎 Core
-
+## 🌎 CORE
 .PHONY: django_serveless_poc_down
 django_serveless_poc_down: ## To down the app
 	docker compose -p django_serveless_poc -f $(DOCKER_COMPOSE_FILE_PATH) down
@@ -29,7 +31,7 @@ django_serveless_poc_up: django_serveless_poc_down ## To launch the up
     	echo "'django_serveless_poc-net' network already exists."; \
 	fi
 	docker compose -p django_serveless_poc -f $(DOCKER_COMPOSE_FILE_PATH) up -d
-# sleep 2
+	sleep 2
 	make django_serveless_poc_logs
 
 .PHONY: django_serveless_poc_logs 
@@ -47,3 +49,14 @@ localstack_free_logs: ## to check the Localstack logs
 .PHONY: aws_cli_local_logs 
 aws_cli_local_logs: ## to check the Localstack logs
 	docker logs aws_cli_local_container -f
+
+## 🦊 TERRAFORM	
+.PHONY: deploy
+deploy: ## To deploy the infrastucture in AWS, Ex: deploy ENV_NAME=dev
+	terragrunt init --terragrunt-non-interactive --terragrunt-working-dir ${TG_ENV_PATH}
+	terragrunt plan --terragrunt-non-interactive --terragrunt-working-dir ${TG_ENV_PATH}
+	terragrunt apply --terragrunt-non-interactive --terragrunt-working-dir ${TG_ENV_PATH} -auto-approve
+
+.PHONY: destroy
+destroy: ## WARNING: Use this with precaution! To destroy the entery infrastucture deployed in AWS, Ex: destroy ENV_NAME=dev
+	terragrunt destroy --terragrunt-non-interactive --terragrunt-working-dir ${TG_ENV_PATH} -auto-approve
