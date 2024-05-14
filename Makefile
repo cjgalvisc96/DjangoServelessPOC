@@ -35,3 +35,15 @@ django_serveless_poc_up: django_serveless_poc_down ## To launch the up
 .PHONY: django_serveless_poc_logs 
 django_serveless_poc_logs: ## to check the backend logs
 	docker logs django_serveless_poc_container -f
+
+.PHONY: db_logs 
+db_logs: ## to check the DB logs
+	docker logs db_container  -f
+
+.PHONY: localstack_free_logs 
+localstack_free_logs: ## to check the Localstack logs
+	docker logs localstack_container -f
+
+.PHONY: aws_cli_local_logs 
+aws_cli_local_logs: ## to check the Localstack logs
+	docker logs aws_cli_local_container -f
