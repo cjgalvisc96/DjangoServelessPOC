@@ -20,6 +20,7 @@ generate "provider" {
       secret_key                  = "test"
       profile                     = "localstack"
       region                      = "us-east-1"
+      # To avoid load_balancer error: attributes: InvalidConfigurationRequest: Key client_keep_alive .seconds not valid
       version                     = "= 5.45"
       s3_use_path_style           = true
       # s3_use_path_style           = false

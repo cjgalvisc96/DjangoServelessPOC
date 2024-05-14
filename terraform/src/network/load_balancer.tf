@@ -39,15 +39,15 @@ resource "aws_lb_target_group" "elucid_lb_target_group" {
   vpc_id      = aws_vpc.elucid_vpc.id
   target_type = var.aws_lb_target_group.target_type
 
-  # health_check {
-  #   path                = var.aws_lb_target_group.health_check.path
-  #   port                = var.aws_lb_target_group.health_check.port
-  #   healthy_threshold   = var.aws_lb_target_group.health_check.healthy_threshold
-  #   unhealthy_threshold = var.aws_lb_target_group.health_check.unhealthy_threshold
-  #   timeout             = var.aws_lb_target_group.health_check.timeout
-  #   interval            = var.aws_lb_target_group.health_check.interval
-  #   matcher             = var.aws_lb_target_group.health_check.matcher
-  # }
+  health_check {
+    path                = var.aws_lb_target_group.health_check.path
+    port                = var.aws_lb_target_group.health_check.port
+    healthy_threshold   = var.aws_lb_target_group.health_check.healthy_threshold
+    unhealthy_threshold = var.aws_lb_target_group.health_check.unhealthy_threshold
+    timeout             = var.aws_lb_target_group.health_check.timeout
+    interval            = var.aws_lb_target_group.health_check.interval
+    matcher             = var.aws_lb_target_group.health_check.matcher
+  }
 
   tags = {
     Name    = "${var.env}-${var.project_name}-lb-target-group"
@@ -55,30 +55,13 @@ resource "aws_lb_target_group" "elucid_lb_target_group" {
 }
 
 ## LOAD BALANCER
-resource "aws_s3_bucket" "elucid_s3_bucket" {
-  bucket = "${var.env}-${var.project_name}-bucket-lb-logs"
-
-  tags = {
-    Name        = "${var.env}-${var.project_name}-bucket-lb-logs"
-  }
-}
-
 resource "aws_lb" "elucid_load_balancer" {
   name               = "${var.env}-${var.project_name}-lb"
   load_balancer_type = var.aws_lb.load_balancer_type
   internal           = var.aws_lb.internal
   security_groups    = [aws_security_group.elucid_secutiry_group.id]
   subnets            = [aws_subnet.elucid_public_subnet_1.id, aws_subnet.elucid_public_subnet_2.id]
-
-  enable_deletion_protection = true
-
-  access_logs {
-    bucket  = aws_s3_bucket.elucid_s3_bucket.id
-    prefix  = "test-lb"
-    enabled = true
-  }
-
-  # idle_timeout = 400
+  # client_keep_alive  = 3600
 
   tags = {
     Name    = "${var.env}-${var.project_name}-lb"
