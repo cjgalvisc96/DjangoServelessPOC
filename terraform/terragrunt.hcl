@@ -77,5 +77,9 @@ generate "variables" {
       variable "project_name" {
         type = string
       }
+
+      variable "aws_subnet__availability_zones" {
+        type = list(string)
+      }
     EOF
 }
