@@ -7,7 +7,7 @@ locals {
 inputs = {
   env                 = local.env
   tf_module_path      = local.tf_module_path
-  project_name        = "django_serveless_poc"
+  project_name        = "elucid"
 }
 
 generate "provider" {
@@ -20,6 +20,7 @@ generate "provider" {
       secret_key                  = "test"
       profile                     = "localstack"
       region                      = "us-east-1"
+      version                     = "= 5.45"
       s3_use_path_style           = true
       # s3_use_path_style           = false
       skip_credentials_validation = true
@@ -54,7 +55,7 @@ generate "provider" {
         ssm             = "http://localhost:4566"
         stepfunctions   = "http://localhost:4566"
         sts             = "http://localhost:4566"
-        elb             = "http://localhost:4566"
+        # elb             = "http://localhost:4566"
         elbv2           = "http://localhost:4566"
       }
     }
@@ -78,8 +79,98 @@ generate "variables" {
         type = string
       }
 
-      variable "aws_subnet__availability_zones" {
-        type = list(string)
+      # Module: Network
+      variable "aws_vpc" {
+        type = object({
+          cidr_block = string
+          enable_dns_support = bool
+          enable_dns_hostnames = bool
+        })
+      }
+
+      variable "aws_subnet" {
+        type = object({
+          public_cidr_blocks = list(string)
+          private_cidr_blocks = list(string)
+          availability_zones = list(string)
+        })
+      }
+
+      variable "aws_route" {
+        type = object({
+          destination_cidr_block = string
+        })
+      }
+
+      variable "aws_eip" {
+        type = object({
+          vpc = bool
+          associate_with_private_ip = string
+        })
+      }
+
+      variable "aws_security_group" {
+        type = object({
+          ingress_1 = object({
+            from_port = number
+            to_port = number
+            protocol = string
+            cidr_blocks = list(string)
+          })
+          ingress_2 = object({
+            from_port = number
+            to_port = number
+            protocol = string
+            cidr_blocks = list(string)
+          })
+          egress_1 = object({
+            from_port = number
+            to_port = number
+            protocol = string
+            cidr_blocks = list(string)
+          })
+        })
+      }
+
+      variable "aws_lb_target_group" {
+        type = object({
+          port = number
+          protocol = string
+          target_type = string
+          health_check = object({
+            path = string
+            port = string
+            healthy_threshold = number
+            unhealthy_threshold = number
+            timeout = number
+            interval = number
+            matcher = string
+          })
+        })
+      }
+
+      variable "aws_lb" {
+        type = object({
+          load_balancer_type = string
+          internal = bool
+        })
+      }
+
+      variable "aws_lb_listener" {
+        type = object({
+          port = string
+          protocol = string
+          default_action = object({
+            type = string
+          })
+        })
+      }
+
+      # Module: Compute
+      variable "aws_ecr_repository" {
+        type = object({
+          image_tag_mutability = string
+        })
       }
     EOF
 }

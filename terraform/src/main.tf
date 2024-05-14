@@ -5,7 +5,14 @@ module "network" {
   tf_module_path                              = var.tf_module_path
   project_name                                = var.project_name
 
-  aws_subnet__availability_zones              = var.aws_subnet__availability_zones
+  aws_vpc                                     = var.aws_vpc
+  aws_subnet                                  = var.aws_subnet
+  aws_route                                   = var.aws_route
+  aws_eip                                     = var.aws_eip
+  aws_security_group                          = var.aws_security_group
+  aws_lb_target_group                         = var.aws_lb_target_group
+  aws_lb                                      = var.aws_lb
+  aws_lb_listener                             = var.aws_lb_listener
 }
 
 module "compute" {
@@ -14,4 +21,6 @@ module "compute" {
   env                                         = var.env
   tf_module_path                              = var.tf_module_path
   project_name                                = var.project_name
+
+  aws_ecr_repository                          = var.aws_ecr_repository
 }
