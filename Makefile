@@ -42,8 +42,8 @@ django_serveless_poc_logs: ## to check the backend logs
 db_logs: ## to check the DB logs
 	docker logs db_container  -f
 
-.PHONY: localstack_free_logs 
-localstack_free_logs: ## to check the Localstack logs
+.PHONY: localstack_pro_logs 
+localstack_pro_logs: ## to check the Localstack logs
 	docker logs localstack_container -f
 
 .PHONY: aws_cli_local_logs 

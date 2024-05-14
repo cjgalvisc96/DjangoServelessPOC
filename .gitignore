@@ -331,3 +331,6 @@ terragrunt-debug.tfvars.json
 # owner
 docker/localstack_pro/*
 docker/localstack_free/*
+
+*/.terragrunt-cache/*
+.terraform.lock.hcl
