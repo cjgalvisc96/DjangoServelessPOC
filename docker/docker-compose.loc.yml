@@ -1,7 +1,7 @@
 services:
-  django_serveless_poc_backend:
-    image: django_serveless_poc_image
-    container_name: django_serveless_poc_container
+  django-serveless-poc-backend:
+    image: django-serveless-poc-image
+    container_name: django-serveless-poc-container
     build:
       context: ../
       dockerfile: docker/django.Dockerfile
@@ -16,27 +16,27 @@ services:
       - "8000:8000"
       - "9500:9500"
     networks:
-      - django_serveless_poc-net
+      - django-serveless-poc-net
 
   db:
     image: postgres
-    container_name: db_container
+    container_name: db-container
     volumes:
       - db_data:/var/lib/postgresql/data/
     restart: always
     environment:
-      POSTGRES_DB: "django_serveless_poc_database"
+      POSTGRES_DB: "django-serveless-poc-database"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
       PGPORT: 5432
     ports:
       - "5432:5432"
     networks:
-      - django_serveless_poc-net
+      - django-serveless-poc-net
        
   localstack:
     image: localstack/localstack-pro
-    container_name: localstack_container
+    container_name: localstack-container
     ports:
       - "127.0.0.1:4566:4566"            # LocalStack Gateway
       - "127.0.0.1:4510-4559:4510-4559"  # External services port range
@@ -49,11 +49,11 @@ services:
       - ${PWD}/docker/localstack_pro:/var/lib/localstack
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
-      - django_serveless_poc-net
+      - django-serveless-poc-net
    
-  aws_cli_local:
+  aws-cli-local:
     image: amazon/aws-cli:2.15.6
-    container_name: aws_cli_local_container
+    container_name: aws-cli-local-container
     environment:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
@@ -67,10 +67,10 @@ services:
     depends_on:
       - localstack
     networks:
-      - django_serveless_poc-net
+      - django-serveless-poc-net
   
 networks:
-  django_serveless_poc-net:
+  django-serveless-poc-net:
     external: true
 
 volumes: 

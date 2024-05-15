@@ -1,7 +1,7 @@
 # How to deploy
 ```bash
     [ROOT]$ make deploy ENV=name # First create the ECS
-    [ROOT]$ make push_docker_image_in_ecs
+    [ROOT]$ make push-docker-image-in-ecs
 ```
 
 
