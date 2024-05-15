@@ -1,12 +1,14 @@
-variable "env" {}
-variable "tf_module_path" {}
-variable "project_name" {}
+variable "resource_prefix" {}
 
-variable "aws_vpc" {}
-variable "aws_subnet" {}
-variable "aws_route" {}
-variable "aws_eip" {}
-variable "aws_security_group" {}
-variable "aws_lb_target_group" {}
-variable "aws_lb" {}
-variable "aws_lb_listener" {}
+variable "elucid_vpc" {}
+variable "elucid_public_subnet_1" {}
+variable "elucid_public_subnet_2" {}
+variable "elucid_private_subnet_1" {}
+variable "elucid_private_subnet_2" {}
+variable "elucid_internet_gateway_route" {}
+variable "elucid_nat_gateway_route" {}
+variable "elucid_eip" {}
+variable "elucid_security_group" {}
+variable "elucid_lb_target_group" {}
+variable "elucid_lb" {}
+variable "elucid_lb_listener" {}

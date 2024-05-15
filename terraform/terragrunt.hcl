@@ -1,13 +1,13 @@
 locals {
   # Only works with folders naming with "3" letters(ex: "loc", "dev", "pro")
   env                 = substr(path_relative_to_include(), -3, -1)
-  tf_module_path      = get_parent_terragrunt_dir()
+  tf_root_path        = get_parent_terragrunt_dir()
+  project_name        = "elucid"
 }
 
 inputs = {
-  env                 = local.env
-  tf_module_path      = local.tf_module_path
-  project_name        = "elucid"
+  tf_root_path        = local.tf_root_path
+  resource_prefix     = "${local.env}-${local.project_name}"
 }
 
 generate "provider" {
@@ -23,7 +23,6 @@ generate "provider" {
       # HACK: To avoid load_balancer_error: 'client_keep_alive .seconds not valid'(Localstack)
       version                     = "= 5.45"
       s3_use_path_style           = true
-      # s3_use_path_style           = false
       skip_credentials_validation = true
       skip_metadata_api_check     = true
       skip_requesting_account_id  = true
@@ -68,20 +67,16 @@ generate "variables" {
     if_exists = "overwrite_terragrunt"
 
     contents = <<EOF
-      variable "env" {
+      variable "tf_root_path" {
         type = string
       }
 
-      variable "tf_module_path" {
-        type = string
-      }
-
-      variable "project_name" {
+      variable "resource_prefix" {
         type = string
       }
 
       # Module: Network
-      variable "aws_vpc" {
+      variable "elucid_vpc" {
         type = object({
           cidr_block = string
           enable_dns_support = bool
@@ -89,28 +84,54 @@ generate "variables" {
         })
       }
 
-      variable "aws_subnet" {
+      variable "elucid_public_subnet_1" {
         type = object({
-          public_cidr_blocks = list(string)
-          private_cidr_blocks = list(string)
-          availability_zones = list(string)
+          cidr_block = string
+          availability_zones = string
         })
       }
 
-      variable "aws_route" {
+      variable "elucid_public_subnet_2" {
+        type = object({
+          cidr_block = string
+          availability_zones = string
+        })
+      }
+
+      variable "elucid_private_subnet_1" {
+        type = object({
+          cidr_block = string
+          availability_zones = string
+        })
+      }
+
+      variable "elucid_private_subnet_2" {
+        type = object({
+          cidr_block = string
+          availability_zones = string
+        })
+      }
+
+      variable "elucid_internet_gateway_route" {
         type = object({
           destination_cidr_block = string
         })
       }
 
-      variable "aws_eip" {
+      variable "elucid_nat_gateway_route" {
+        type = object({
+          destination_cidr_block = string
+        })
+      }
+
+      variable "elucid_eip" {
         type = object({
           vpc = bool
           associate_with_private_ip = string
         })
       }
 
-      variable "aws_security_group" {
+      variable "elucid_security_group" {
         type = object({
           ingress_1 = object({
             from_port = number
@@ -133,7 +154,7 @@ generate "variables" {
         })
       }
 
-      variable "aws_lb_target_group" {
+      variable "elucid_lb_target_group" {
         type = object({
           port = number
           protocol = string
@@ -150,14 +171,14 @@ generate "variables" {
         })
       }
 
-      variable "aws_lb" {
+      variable "elucid_lb" {
         type = object({
           load_balancer_type = string
           internal = bool
         })
       }
 
-      variable "aws_lb_listener" {
+      variable "elucid_lb_listener" {
         type = object({
           port = string
           protocol = string
@@ -168,9 +189,63 @@ generate "variables" {
       }
 
       # Module: Compute
-      variable "aws_ecr_repository" {
+      variable "elucid_backend_repository" {
         type = object({
           image_tag_mutability = string
+        })
+      }
+
+      variable "elucid_backend_log_group" {
+        type = object({
+          retention_in_days = number
+        })
+      }
+
+      variable "elucid_ecs_backend_web" {
+        type = object({
+          network_mode = string
+          requires_compatibilities = list(string)
+          cpu = string
+          memory = string
+          family = string
+          container_definitions = object({
+            region = string
+            name = string
+            command = list(string)
+          })
+        })
+      }
+
+      variable "elucid_security_group_ecs_backend" {
+        type = object({
+          ingress = object({
+            from_port = number
+            to_port = number
+            protocol = string
+          })
+          egress = object({
+            from_port = number
+            to_port = number
+            protocol = string
+            cidr_blocks = list(string)
+          })
+        })
+      }
+
+      variable "elucid_ecs_service_backend_web" {
+        type = object({
+          desired_count = number
+          deployment_minimum_healthy_percent = number
+          deployment_maximum_percent = number
+          launch_type = string
+          scheduling_strategy = string
+          load_balancer = object({
+            container_name = string
+            container_port = number
+          })
+          network_configuration = object({
+            assign_public_ip = bool
+          })
         })
       }
     EOF

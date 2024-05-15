@@ -1,26 +1,37 @@
 module "network" {
   source                                      = "./network"
 
-  env                                         = var.env
-  tf_module_path                              = var.tf_module_path
-  project_name                                = var.project_name
+  resource_prefix                             = var.resource_prefix
 
-  aws_vpc                                     = var.aws_vpc
-  aws_subnet                                  = var.aws_subnet
-  aws_route                                   = var.aws_route
-  aws_eip                                     = var.aws_eip
-  aws_security_group                          = var.aws_security_group
-  aws_lb_target_group                         = var.aws_lb_target_group
-  aws_lb                                      = var.aws_lb
-  aws_lb_listener                             = var.aws_lb_listener
+  elucid_vpc                                  = var.elucid_vpc
+  elucid_public_subnet_1                      = var.elucid_public_subnet_1
+  elucid_public_subnet_2                      = var.elucid_public_subnet_2
+  elucid_private_subnet_1                     = var.elucid_private_subnet_1
+  elucid_private_subnet_2                     = var.elucid_private_subnet_2
+  elucid_internet_gateway_route               = var.elucid_internet_gateway_route
+  elucid_nat_gateway_route                    = var.elucid_nat_gateway_route
+  elucid_eip                                  = var.elucid_eip
+  elucid_security_group                       = var.elucid_security_group
+  elucid_lb_target_group                      = var.elucid_lb_target_group
+  elucid_lb                                   = var.elucid_lb
+  elucid_lb_listener                          = var.elucid_lb_listener
 }
 
 module "compute" {
   source                                      = "./compute"
 
-  env                                         = var.env
-  tf_module_path                              = var.tf_module_path
-  project_name                                = var.project_name
+  tf_root_path                                = var.tf_root_path
+  resource_prefix                             = var.resource_prefix
 
-  aws_ecr_repository                          = var.aws_ecr_repository
+  elucid_backend_repository                   = var.elucid_backend_repository
+  elucid_backend_log_group                    = var.elucid_backend_log_group
+  elucid_ecs_backend_web                      = var.elucid_ecs_backend_web
+  elucid_security_group_ecs_backend           = var.elucid_security_group_ecs_backend
+  elucid_ecs_service_backend_web              = var.elucid_ecs_service_backend_web
+
+  elucid_vpc_id                               = module.network.elucid_vpc_id
+  elucid_security_group_id                    = module.network.elucid_security_group_id
+  elucid_private_subnet_1_id                  = module.network.elucid_private_subnet_1_id
+  elucid_private_subnet_2_id                  = module.network.elucid_private_subnet_2_id
+  elucid_lb_target_group_arn                  = module.network.elucid_lb_target_group_arn
 }

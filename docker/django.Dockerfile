@@ -1,7 +1,7 @@
 FROM python:3.12-slim-bullseye
 
-# TODO: Open http port when deploying
-# EXPOSE 8000 
+# To connect with the load balancer
+EXPOSE 8000 
 
 # Prevent buffering std out
 ENV PYTHONUNBUFFERED 1 
@@ -12,7 +12,6 @@ ENV DEBIAN_FRONTEND noninteractive
 # Prevent failing installing poetry
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1 
 # Set the custom PYTHONPATH
-# ENV PYTHONPATH=${PYTHONPATH}:/django_serverless_poc
 ENV PYTHONPATH=${PYTHONPATH}:/app
 
 WORKDIR /app

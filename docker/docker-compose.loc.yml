@@ -42,7 +42,7 @@ services:
       - "127.0.0.1:4510-4559:4510-4559"  # External services port range
       - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (Pro)
     environment:
-      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:?}
       - DEBUG=${DEBUG:-0}
       - PERSISTENCE=${PERSISTENCE:-0}
     volumes:

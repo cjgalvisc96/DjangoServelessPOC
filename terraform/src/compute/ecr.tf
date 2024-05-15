@@ -1,8 +1,8 @@
-resource "aws_ecr_repository" "elucid_ecr_repository" {
-  name                 = "${var.env}_${var.project_name}_ecr_repository"
-  image_tag_mutability = var.aws_ecr_repository.image_tag_mutability
+resource "aws_ecr_repository" "elucid_backend_repository" {
+  name                 = "${var.resource_prefix}-ecr-repository"
+  image_tag_mutability = var.elucid_backend_repository.image_tag_mutability
 
   tags = {
-    Name    = "${var.env}_${var.project_name}_ecr_repository"
+    Name    = "${var.resource_prefix}-ecr-repository"
   }
 }
